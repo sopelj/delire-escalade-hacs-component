@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 import logging
 from typing import Any, Callable, Dict, Optional
 
@@ -14,7 +14,7 @@ from homeassistant.helpers.typing import (
 )
 import voluptuous as vol
 
-from .const import CONF_GYMS, OCCUPANCY_API_URL, GYMS
+from .const import CONF_GYMS, GYMS, OCCUPANCY_API_URL, Gym
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,29 +36,29 @@ async def async_setup_platform(
     """
     Set up the sensor platform
     """
-    sensors = [DeOccupancySensor(gym) for gym in config[CONF_GYMS]]
+    sensors = [DeOccupancySensor(gym_code) for gym_code in config[CONF_GYMS]]
     async_add_entities(sensors, update_before_add=True)
 
 
 class DeOccupancySensor(Entity):
     def __init__(self, gym: str) -> None:
         super().__init__()
-        self.gym = gym
-        self.attrs: Dict[str, Any] = {'location': self.gym}
+        self.gym: Gym = GYMS[gym]
+        self.attrs: Dict[str, Any] = {'gym': self.gym.name}
         self._state = None
         self._available = True
 
     @property
     def name(self) -> str:
-        return self.gym
+        return self.unique_id
 
     @property
     def friendly_name(self) -> str:
-        return GYMS[self.gym]
+        return self.gym.name
 
     @property
     def unique_id(self) -> str:
-        return self.gym
+        return f'{self.gym.id}_occupancy'
 
     @property
     def available(self) -> bool:
@@ -69,6 +69,10 @@ class DeOccupancySensor(Entity):
         return self._state
 
     @property
+    def unit_of_measurement(self):
+        return '%'
+
+    @property
     def device_state_attributes(self) -> Dict[str, Any]:
         return self.attrs
 
@@ -76,7 +80,7 @@ class DeOccupancySensor(Entity):
         if 8 <= datetime.now().hour <= 22:
             try:
                 async with ClientSession() as session:
-                    async with session.get(OCCUPANCY_API_URL.format(code=self.gym)) as response:
+                    async with session.get(OCCUPANCY_API_URL.format(code=self.gym.code)) as response:
                         data = await response.json()
             except ClientError:
                 self._available = False
@@ -89,5 +93,5 @@ class DeOccupancySensor(Entity):
         # set values
         self.attrs['count'] = data['count']
         self.attrs['percent'] = data['percent']
-        self._state = f"{data['percent']:.2f}%"
+        self._state = f"{data['percent']:.2f}"
         self._available = True
