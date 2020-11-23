@@ -1,5 +1,5 @@
 {
-  "name": "Jesse's HASS Custom Components",
+  "name": "Délire Escalade Ocuupancy Sensor",
   "render_readme": true,
   "iot_class": "Cloud Polling"
 }

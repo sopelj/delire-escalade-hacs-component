@@ -3,7 +3,7 @@
   "config_flow": false,
   "dependencies": [],
   "documentation": "https://github.com/sopelj/home-assistant-custom-components",
-  "domain": "de-occupancy",
-  "name": "Délire Escalade Occupancy",
+  "domain": "de_occupancy",
+  "name": "Délire Escalade Occupancy Sensor",
   "requirements": ["aiohttp"]
 }
