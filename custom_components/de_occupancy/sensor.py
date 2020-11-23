@@ -44,18 +44,18 @@ async def async_setup_platform(
 class DeOccupancySensor(Entity):
     def __init__(self, gym: str) -> None:
         super().__init__()
-        self.location = location
-        self.attrs: Dict[str, Any] = {'location': self.location}
+        self.gym = gym
+        self.attrs: Dict[str, Any] = {'location': self.gym}
         self._state = None
         self._available = True
 
     @property
     def name(self) -> str:
-        return self.location
+        return self.gym
 
     @property
     def unique_id(self) -> str:
-        return self.location
+        return self.gym
 
     @property
     def available(self) -> bool:
@@ -72,7 +72,7 @@ class DeOccupancySensor(Entity):
     async def async_update(self):
         try:
             async with ClientSession() as session:
-                async with session.get(OCCUPANCY_API_URL.format(code=self.location)) as response:
+                async with session.get(OCCUPANCY_API_URL.format(code=self.gym)) as response:
                     data = await response.json()
                     self.attrs['count'] = data['count']
                     self.attrs['percent'] = data['percent']
