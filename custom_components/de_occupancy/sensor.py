@@ -50,15 +50,11 @@ class DeOccupancySensor(Entity):
 
     @property
     def name(self) -> str:
-        return self.unique_id
-
-    @property
-    def friendly_name(self) -> str:
         return self.gym.name
 
     @property
     def unique_id(self) -> str:
-        return f'{self.gym.id}_occupancy'
+        return f'de_{self.gym.id}_occupancy'
 
     @property
     def available(self) -> bool:
@@ -71,6 +67,18 @@ class DeOccupancySensor(Entity):
     @property
     def unit_of_measurement(self):
         return '%'
+
+    @property
+    def icon(self) -> Optional[str]:
+        if self.available is False:
+            return 'mdi:account-question-outline'
+        if self.state == 0:
+            return 'mdi:account-outline'
+        if self._state >= 100:
+            return 'mdi:account-multiple-remove'
+        if self._state >= 50:
+            return 'mdi:account-multiple'
+        return 'mdi:account'
 
     @property
     def device_state_attributes(self) -> Dict[str, Any]:
@@ -92,6 +100,5 @@ class DeOccupancySensor(Entity):
         
         # set values
         self.attrs['count'] = data['count']
-        self.attrs['percent'] = data['percent']
-        self._state = f"{data['percent']:.2f}"
+        self._state = data['percent']
         self._available = True
