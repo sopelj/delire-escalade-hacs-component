@@ -14,17 +14,16 @@ from homeassistant.helpers.typing import (
 )
 import voluptuous as vol
 
-from .const import CONF_GYMS, OCCUPANCY_API_URL, Gym
+from .const import CONF_GYMS, OCCUPANCY_API_URL, GYMS
 
 _LOGGER = logging.getLogger(__name__)
 
 # Time between updating data from API
 SCAN_INTERVAL = timedelta(minutes=10)
 
-
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
-        vol.Required(CONF_GYMS): vol.All(cv.ensure_list, cv.enum(Gym)),
+        vol.Required(CONF_GYMS): vol.All(cv.ensure_list, list(GYMS.keys())),
     }
 )
 
@@ -54,6 +53,10 @@ class DeOccupancySensor(Entity):
         return self.gym
 
     @property
+    def friendly_name(self) -> str:
+        return GYMS[self.gym]
+
+    @property
     def unique_id(self) -> str:
         return self.gym
 
@@ -69,7 +72,7 @@ class DeOccupancySensor(Entity):
     def device_state_attributes(self) -> Dict[str, Any]:
         return self.attrs
 
-    async def async_update(self):
+    async def async_update(self) -> None:
         try:
             async with ClientSession() as session:
                 async with session.get(OCCUPANCY_API_URL.format(code=self.gym)) as response:
