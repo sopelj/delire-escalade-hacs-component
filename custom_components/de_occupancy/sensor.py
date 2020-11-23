@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 import logging
 from typing import Any, Callable, Dict, Optional
 
@@ -73,14 +73,21 @@ class DeOccupancySensor(Entity):
         return self.attrs
 
     async def async_update(self) -> None:
-        try:
-            async with ClientSession() as session:
-                async with session.get(OCCUPANCY_API_URL.format(code=self.gym)) as response:
-                    data = await response.json()
-                    self.attrs['count'] = data['count']
-                    self.attrs['percent'] = data['percent']
-                    self._state = f"{data['percent']:.2f}%"
-                    self._available = True
-        except ClientError:
-            self._available = False
-            _LOGGER.exception("Error retrieving data from DE API.")
+        if 8 <= datetime.now().hour <= 22:
+            try:
+                async with ClientSession() as session:
+                    async with session.get(OCCUPANCY_API_URL.format(code=self.gym)) as response:
+                        data = await response.json()
+            except ClientError:
+                self._available = False
+                _LOGGER.exception("Error retrieving data from DE API.")
+                return None
+        else:
+            # Closed always empty
+            data = {'count': 0, 'percent': 0}
+        
+        # set values
+        self.attrs['count'] = data['count']
+        self.attrs['percent'] = data['percent']
+        self._state = f"{data['percent']:.2f}%"
+        self._available = True
