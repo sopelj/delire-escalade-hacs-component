@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict, Optional
 from aiohttp import ClientError, ClientSession
 from homeassistant import config_entries, core
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import UNIT_PERCENTAGE
+from homeassistant.const import PERCENTAGE
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import (
@@ -67,7 +67,7 @@ class DeOccupancySensor(Entity):
 
     @property
     def unit_of_measurement(self):
-        return UNIT_PERCENTAGE
+        return PERCENTAGE
 
     @property
     def icon(self) -> Optional[str]:
