@@ -5,6 +5,7 @@ from typing import Any, Callable, Dict, Optional
 from aiohttp import ClientError, ClientSession
 from homeassistant import config_entries, core
 from homeassistant.components.sensor import PLATFORM_SCHEMA
+from homeassistant.const import UNIT_PERCENTAGE
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import (
@@ -50,7 +51,7 @@ class DeOccupancySensor(Entity):
 
     @property
     def name(self) -> str:
-        return self.gym.name
+        return f'{self.gym.name} Occupancy'
 
     @property
     def unique_id(self) -> str:
@@ -66,7 +67,7 @@ class DeOccupancySensor(Entity):
 
     @property
     def unit_of_measurement(self):
-        return '%'
+        return UNIT_PERCENTAGE
 
     @property
     def icon(self) -> Optional[str]:
@@ -74,9 +75,9 @@ class DeOccupancySensor(Entity):
             return 'mdi:account-question-outline'
         if self.state == 0:
             return 'mdi:account-outline'
-        if self._state >= 100:
+        if self.state >= 100:
             return 'mdi:account-multiple-remove'
-        if self._state >= 50:
+        if self.state >= 50:
             return 'mdi:account-multiple'
         return 'mdi:account'
 
@@ -96,9 +97,10 @@ class DeOccupancySensor(Entity):
                 return None
         else:
             # Closed always empty
-            data = {'count': 0, 'percent': 0}
+            data = {'count': 0, 'percent': 0, 'full_percent': 0}
         
         # set values
         self.attrs['count'] = data['count']
-        self._state = data['percent']
+        self.attrs['full_percent'] = data['percent']
+        self._state = 100 if (percent := round(data['percent'])) >= 100 else percent
         self._available = True
