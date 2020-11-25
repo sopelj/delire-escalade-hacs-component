@@ -97,6 +97,7 @@ class DeOccupancySensor(Entity):
                         waitlist_data = await response.json()
                     data['waiting'] = waitlist_data['numWaiting']  # number on waitlist
                     data['wait_eta'] = waitlist_data['wait']  # seconds
+                return data
 
         except ClientError:
             self._available = False
