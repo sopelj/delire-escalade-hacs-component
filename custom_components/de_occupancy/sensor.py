@@ -41,6 +41,17 @@ async def async_setup_platform(
     async_add_entities(sensors, update_before_add=True)
 
 
+def format_seconds(seconds: int) -> str:
+    minutes = seconds // 60 % 60
+    hours = seconds // 60 // 60
+    output = []
+    if hours:
+        output.append(f'{hours} hour{"" if hours == 1 else "s"}')
+    if minutes:
+        output.append(f'{minutes}min')
+    return ' '.join(output) or '0min'
+
+
 class DeOccupancySensor(Entity):
     def __init__(self, gym: str) -> None:
         super().__init__()
@@ -91,12 +102,15 @@ class DeOccupancySensor(Entity):
                 async with session.get(OCCUPANCY_API_URL.format(code=self.gym.code)) as response:
                     data = await response.json()
                 
-                if data['percent'] >= 95:
+                if data['percent'] >= 90:
                     # Only check the waitlist if over 95%
                     async with session.get(WAITLIST_API_URL.format(code=self.gym.waitlist)) as response:
                         waitlist_data = await response.json()
-                    data['waiting'] = waitlist_data['numWaiting']  # number on waitlist
-                    data['wait_eta'] = waitlist_data['wait']  # seconds
+                    data.update(
+                        waiting=waitlist_data['numWaiting'],  # number of people on waitlist
+                        wait_eta=waitlist_data['wait'],  # ETA in seconds
+                        friendly_wait_eta=format_seconds(waitlist_data['wait']),
+                    )
                 return data
 
         except ClientError:
@@ -105,7 +119,15 @@ class DeOccupancySensor(Entity):
             return {}
 
     async def async_update(self) -> None:
-        attrs = {'count': 0, 'percent': 0, 'waiting': 0, 'wait_eta': 0, 'gym': self.gym.name}
+        attrs = {
+            'count': 0, 
+            'percent': 0, 
+            'waiting': 0, 
+            'wait_eta': 0, 
+            'friendly_wait_eta': '', 
+            'gym': self.gym.name
+        }
+
         if 8 <= datetime.now().hour <= 22:
             # Only fetch when open
             attrs.update(await self.fetch_new_attrs())
