@@ -19,3 +19,78 @@ sensors:
       - pierrebertrand
       - stefoy
 ```
+
+## Usage
+
+The sensors will fetch the information every 10min from Délire Escalade's webpage.
+If the occupancy is higher than 95% then it will also check the waitlist for the amount of people waiting and the ETA.
+
+**Note: The sensors will not update between 8am and 11pm because they are closed and it will always be empty**
+
+Example:
+
+![Entity data](./examples/entities.png)
+
+### Lovelace
+
+You can use this data to display information about the places you go most often.
+For example I currently have this:
+
+```yaml
+# Climbing
+type: custom:vertical-stack-in-card
+cards:
+  - type: grid
+    title: 'Climbing'
+    icon: mdi:carabiner
+    columns: 2
+    square: false
+    cards:
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: gauge
+            name: Délire Ste-Foy
+            entity: sensor.ste_foy_occupancy
+          - type: entities
+            entities:
+              - type: custom:template-entity-row
+                icon: mdi:account-group
+                name: Waiting
+                state: "{{ state_attr('sensor.ste_foy_occupancy', 'waiting') }}"
+                condition: "{{ state_attr('sensor.ste_foy_occupancy', 'waiting') > 0 }}"
+              - type: custom:template-entity-row
+                icon: mdi:clock-time-nine-outline
+                name: ETA
+                state: "{{ state_attr('sensor.ste_foy_occupancy', 'friendly_wait_eta') }}"
+                condition: "{{ state_attr('sensor.ste_foy_occupancy', 'friendly_wait_eta') != None }}"
+
+      - type: custom:vertical-stack-in-card
+        cards:
+          - type: gauge
+            name: Délire PB
+            entity: sensor.pierre_bertrand_occupancy
+          - type: entities
+            entities:
+              - type: custom:template-entity-row
+                icon: mdi:account-group
+                name: Waiting
+                state: "{{ state_attr('sensor.pierre_bertrand_occupancy', 'waiting') }}"
+                condition: "{{ state_attr('sensor.pierre_bertrand_occupancy', 'waiting') > 0 }}"
+              - type: custom:template-entity-row
+                icon: mdi:clock-time-nine-outline
+                name: ETA
+                state: "{{ state_attr('sensor.pierre_bertrand_occupancy', 'friendly_wait_eta') }}"
+                condition: "{{ state_attr('sensor.pierre_bertrand_occupancy', 'friendly_wait_eta') != '0min' }}"
+
+  - type: custom:mini-graph-card
+    icon: mdi:carabiner
+    hours_to_show: 10
+    entities:
+      - sensor.ste_foy_occupancy
+      - sensor.pierre_bertrand_occupancy
+
+```
+
+Which looks like:
+
+![Lovelace example](./examples/lovelace.png)
