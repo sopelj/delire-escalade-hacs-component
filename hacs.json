@@ -1,5 +1,6 @@
 {
   "name": "Délire Escalade Ocuupancy Sensor",
   "render_readme": true,
+  "version": "1.0.0",
   "iot_class": "Cloud Polling"
 }
