@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta
 import logging
 from typing import Any, Callable, Dict, Optional
 
 from aiohttp import ClientError, ClientSession
-from homeassistant import config_entries, core
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import PERCENTAGE
 import homeassistant.helpers.config_validation as cv
@@ -32,7 +33,7 @@ async def async_setup_platform(
     hass: HomeAssistantType,
     config: ConfigType,
     async_add_entities: Callable,
-    discovery_info: Optional[DiscoveryInfoType] = None,
+    discovery_info: DiscoveryInfoType | None = None,
 ) -> None:
     """
     Set up the sensor platform
@@ -56,7 +57,7 @@ class DeOccupancySensor(Entity):
     def __init__(self, gym: str) -> None:
         super().__init__()
         self.gym: Gym = GYMS[gym]
-        self.attrs: Dict[str, Any] = {}
+        self.attrs: dict[str, Any] = {}
         self._state = None
         self._available = True
 
@@ -73,7 +74,7 @@ class DeOccupancySensor(Entity):
         return self._available
 
     @property
-    def state(self) -> Optional[str]:
+    def state(self) -> str | None:
         return self._state
 
     @property
@@ -81,7 +82,7 @@ class DeOccupancySensor(Entity):
         return PERCENTAGE
 
     @property
-    def icon(self) -> Optional[str]:
+    def icon(self) -> str | None:
         if self.available is False:
             return 'mdi:account-question-outline'
         if self.state == 0:
@@ -93,7 +94,7 @@ class DeOccupancySensor(Entity):
         return 'mdi:account'
 
     @property
-    def device_state_attributes(self) -> Dict[str, Any]:
+    def device_state_attributes(self) -> dict[str, Any]:
         return self.attrs
 
     async def fetch_new_attrs(self):
@@ -128,7 +129,7 @@ class DeOccupancySensor(Entity):
             'gym': self.gym.name
         }
 
-        if 8 <= datetime.now().hour <= 22:
+        if 7 <= datetime.now().hour <= 22:
             # Only fetch when open
             attrs.update(await self.fetch_new_attrs())
         

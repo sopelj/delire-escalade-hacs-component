@@ -4,7 +4,7 @@
   "dependencies": [],
   "documentation": "https://github.com/sopelj/home-assistant-custom-components",
   "domain": "de_occupancy",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "name": "Délire Escalade Occupancy Sensor",
   "requirements": ["aiohttp"]
 }
