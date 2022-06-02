@@ -2,7 +2,7 @@
 
 [![GitHub Release](https://img.shields.io/github/release/sopelj/delire-escalade-hacs-component.svg?style=for-the-badge)](https://github.com/sopelj/delire-escalade-hacs-component/releases)
 [![License](https://img.shields.io/github/license/sopelj/delire-escalade-hacs-component.svg?style=for-the-badge)](LICENSE.md)
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
 ![Project Maintenance](https://img.shields.io/maintenance/yes/2022.svg?style=for-the-badge)
 
 A sensor to display the occupancy of the [Délire Climbing gyms](https://www.delirescalade.com/) in Québec.
