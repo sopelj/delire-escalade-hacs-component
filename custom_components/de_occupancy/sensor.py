@@ -1,9 +1,10 @@
+"""Setup sensor platform."""
 from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import datetime, timedelta
 import logging
-from typing import Any
+from typing import TypedDict
 
 from aiohttp import ClientError, ClientSession
 from homeassistant.components.sensor import PLATFORM_SCHEMA
@@ -27,8 +28,27 @@ SCAN_INTERVAL = timedelta(minutes=10)
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_GYMS): vol.All(cv.ensure_list, list(GYMS)),
-    }
+    },
 )
+
+DEFAULT_ATTRS_VALUES = {
+    "count": 0,
+    "percent": 0,
+    "waiting": 0,
+    "wait_eta": 0,
+    "friendly_wait_eta": "",
+}
+
+
+class StateAttrDict(TypedDict):
+    """State Attribute data."""
+
+    count: int
+    percent: int
+    waiting: int
+    wait_eta: int
+    friendly_wait_eta: str
+
 
 async def async_setup_platform(
     hass: HomeAssistantType,
@@ -36,82 +56,79 @@ async def async_setup_platform(
     async_add_entities: Callable,
     discovery_info: DiscoveryInfoType | None = None,
 ) -> None:
-    """
-    Set up the sensor platform
-    """
+    """Set up the sensor platform."""
     sensors = [DeOccupancySensor(gym_code) for gym_code in config[CONF_GYMS]]
     async_add_entities(sensors, update_before_add=True)
 
 
 def format_seconds(seconds: int) -> str:
+    """Format seconds for display."""
     minutes = seconds // 60 % 60
     hours = seconds // 60 // 60
     output = []
     if hours:
         output.append(f'{hours} hour{"" if hours == 1 else "s"}')
     if minutes:
-        output.append(f'{minutes}min')
-    return ' '.join(output) or '0min'
+        output.append(f"{minutes}min")
+    return " ".join(output) or "0min"
 
 
 class DeOccupancySensor(Entity):
+    """Occupancy sensor for gyn."""
+
     def __init__(self, gym: str) -> None:
-        super().__init__()
+        """Set up the sensor."""
         self.gym: Gym = GYMS[gym]
-        self.attrs: dict[str, Any] = {}
         self._state = None
         self._available = True
-
-    @property
-    def name(self) -> str:
-        return f'{self.gym.name} Occupancy'
-
-    @property
-    def unique_id(self) -> str:
-        return f'de_{self.gym.id}_occupancy'
-
-    @property
-    def available(self) -> bool:
-        return self._available
+        self._attr_available = True
+        self._attr_name = f"{self.gym.name} Occupancy"
+        self._attr_unique_id = f"de_{self.gym.id}_occupancy"
+        self._attr_unit_of_measurement = PERCENTAGE
+        self._attr_extra_state_attributes: StateAttrDict = {
+            "gym": self.gym.name,
+        } | DEFAULT_ATTRS_VALUES
+        super().__init__()
 
     @property
     def state(self) -> int | None:
+        """State value."""
         return self._state
 
     @property
-    def unit_of_measurement(self):
-        return PERCENTAGE
-
-    @property
     def icon(self) -> str | None:
+        """Icon for sensor."""
         if self.available is False:
-            return 'mdi:account-question-outline'
+            return "mdi:account-question-outline"
         if self.state == 0:
-            return 'mdi:account-outline'
+            return "mdi:account-outline"
         if self.state >= 100:
-            return 'mdi:account-multiple-remove'
+            return "mdi:account-multiple-remove"
         if self.state >= 50:
-            return 'mdi:account-multiple'
-        return 'mdi:account'
+            return "mdi:account-multiple"
+        return "mdi:account"
 
-    @property
-    def device_state_attributes(self) -> dict[str, Any]:
-        return self.attrs
-
-    async def fetch_new_attrs(self):
+    async def fetch_new_attrs(self) -> dict[str, str | int]:
+        """Fetch data from APIs based on gym and occupancy."""
         try:
             async with ClientSession() as session:
-                async with session.get(OCCUPANCY_API_URL.format(code=self.gym.code)) as response:
+                async with session.get(
+                    OCCUPANCY_API_URL.format(code=self.gym.code),
+                ) as response:
                     data = await response.json()
-                
-                if data['percent'] >= 90:
-                    # Only check the waitlist if over 95%
-                    async with session.get(WAITLIST_API_URL.format(code=self.gym.wait_list)) as response:
-                        waitlist_data = await response.json()
+
+                if data["percent"] >= 90:
+                    # Only check the wait-list if over 95%
+                    async with session.get(
+                        WAITLIST_API_URL.format(code=self.gym.wait_list),
+                    ) as response:
+                        wait_list_data = await response.json()
                     data.update(
-                        waiting=waitlist_data['numWaiting'],  # number of people on wait list
-                        wait_eta=waitlist_data['wait'],  # ETA in seconds
-                        friendly_wait_eta=format_seconds(waitlist_data['wait']),
+                        waiting=wait_list_data[
+                            "numWaiting"
+                        ],  # number of people on wait list
+                        wait_eta=wait_list_data["wait"],  # ETA in seconds
+                        friendly_wait_eta=format_seconds(wait_list_data["wait"]),
                     )
                 return data
 
@@ -121,20 +138,16 @@ class DeOccupancySensor(Entity):
             return {}
 
     async def async_update(self) -> None:
-        attrs = {
-            'count': 0, 
-            'percent': 0, 
-            'waiting': 0, 
-            'wait_eta': 0, 
-            'friendly_wait_eta': '', 
-            'gym': self.gym.name
-        }
-
+        """Perform update."""
         if 7 <= datetime.now().hour <= 22:
             # Only fetch when open
-            attrs.update(await self.fetch_new_attrs())
-        
+            new_values = await self.fetch_new_attrs()
+        else:
+            new_values = DEFAULT_ATTRS_VALUES
+
         # set values
-        self.attrs = attrs
-        self._state = 100 if (percent := round(attrs['percent'])) >= 100 else percent
         self._available = True
+        self._attr_extra_state_attributes.update(new_values)
+        self._state = (
+            100 if (percent := round(new_values["percent"])) >= 100 else percent
+        )
