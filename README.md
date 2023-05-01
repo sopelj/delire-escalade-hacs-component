@@ -24,12 +24,13 @@ sensors:
       - pierrebertrand
       - stefoy
       - parc
+      - levis
 ```
 
 ## Usage
 
 The sensors will fetch the information every 10min from Délire Escalade's webpage.
-If the occupancy is higher than 95% then it will also check the waitlist for the amount of people waiting and the ETA.
+If the occupancy is higher than 95% then it will also check the wait list for the amount of people waiting and the ETA.
 
 **Note: The sensors will not update between 7am and 11pm because they are closed and it will always be empty**
 

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import datetime, timedelta
 import logging
-from typing import Any, Callable, Dict, Optional
+from typing import Any
 
 from aiohttp import ClientError, ClientSession
 from homeassistant.components.sensor import PLATFORM_SCHEMA
@@ -25,7 +26,7 @@ SCAN_INTERVAL = timedelta(minutes=10)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
-        vol.Required(CONF_GYMS): vol.All(cv.ensure_list, list(GYMS.keys())),
+        vol.Required(CONF_GYMS): vol.All(cv.ensure_list, list(GYMS)),
     }
 )
 
@@ -74,7 +75,7 @@ class DeOccupancySensor(Entity):
         return self._available
 
     @property
-    def state(self) -> str | None:
+    def state(self) -> int | None:
         return self._state
 
     @property
@@ -105,10 +106,10 @@ class DeOccupancySensor(Entity):
                 
                 if data['percent'] >= 90:
                     # Only check the waitlist if over 95%
-                    async with session.get(WAITLIST_API_URL.format(code=self.gym.waitlist)) as response:
+                    async with session.get(WAITLIST_API_URL.format(code=self.gym.wait_list)) as response:
                         waitlist_data = await response.json()
                     data.update(
-                        waiting=waitlist_data['numWaiting'],  # number of people on waitlist
+                        waiting=waitlist_data['numWaiting'],  # number of people on wait list
                         wait_eta=waitlist_data['wait'],  # ETA in seconds
                         friendly_wait_eta=format_seconds(waitlist_data['wait']),
                     )

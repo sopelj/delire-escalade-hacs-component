@@ -1,6 +1,5 @@
 {
-  "name": "Délire Escalade Ocuupancy Sensor",
+  "name": "Délire Escalade Occupancy Sensor",
   "render_readme": true,
-  "version": "1.1.0",
-  "iot_class": "Cloud Polling"
+  "homeassistant": "2023.4.0"
 }

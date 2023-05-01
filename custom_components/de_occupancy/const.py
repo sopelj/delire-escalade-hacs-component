@@ -1,6 +1,12 @@
-from collections import namedtuple
+from typing import NamedTuple
 
-Gym = namedtuple('Gym', 'id code name waitlist')
+
+class Gym(NamedTuple):
+    id: str
+    code: str
+    name: str
+    wait_list: str
+
 
 DOMAIN = "de_occupancy"
 CONF_GYMS = 'gyms'
@@ -9,6 +15,7 @@ GYMS = {
     'pierrebertrand': Gym('pierrebertrand', 'DPB', 'Pierre Bertrand', 'delire'),
     'stefoy': Gym('stefoy', 'DLE', 'Ste-Foy', 'delireste-foy'),
     'parc': Gym('parc', 'LCE', 'DÉLIRE Parc', 'parc'),
+    'levis': Gym('levis', 'DEL', 'DÉLIRE Lévis', 'levis'),
 }
 OCCUPANCY_API_URL = "https://www.delirescalade.com/web/wp-json/api/occupancy?skipcache=1&code={code}"
 WAITLIST_API_URL = "https://api.waitwhile.com/v2/public/locations/{code}"
