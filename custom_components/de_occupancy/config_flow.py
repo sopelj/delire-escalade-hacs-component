@@ -36,7 +36,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         data_schema = vol.Schema(
             {
-                vol.Required(CONF_GYMS): vol.All(cv.ensure_list, list(GYMS), default=list(GYMS)),
+                vol.Required(CONF_GYMS): vol.All(
+                    cv.ensure_list,
+                    list(GYMS),
+                    vol.Length(min=1),
+                    default=list(GYMS),
+                ),
             },
         )
         return self.async_show_form(
@@ -72,6 +77,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required(CONF_GYMS): vol.All(
                         cv.ensure_list,
                         list(GYMS),
+                        vol.Length(min=1),
                         default=config_entry.data[CONF_GYMS],
                     ),
                 },

@@ -33,6 +33,7 @@ async def test_setup_sensors(
         },
     )
     await setup_platform(hass, ["stefoy"], mock_api)
+    await hass.async_block_till_done()
     assert len(hass.states.async_all()) == 1
 
     # Ste-Foy Sensor
