@@ -1,0 +1,37 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurer la surveillance d'occupation Délire Escalade",
+        "data": {
+          "gyms": "Centres d'escalade à surveiller"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigurer la surveillance d'occupation Délire Escalade",
+        "data": {
+          "gyms": "Centres d'escalade à surveiller"
+        }
+      }
+    },
+    "abort": {
+      "invalid": "Configuration invalide",
+      "single_instance_allowed": "Cette intégration ne peut être ajoutée qu'une seule fois"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "occupancy": {
+        "name": "Taux d'occupation",
+        "state_attributes": {
+          "count": { "name": "Nombre d'occupants" },
+          "percent": { "name": "Pourcentage occupé" },
+          "waiting": { "name": "Nombre en attente" },
+          "wait_eta": { "name": "Temps d'attente estimé" },
+          "friendly_wait_eta": { "name": "Temps d'attente d'attente formaté" },
+          "gym": { "name": "Centre d'escalade" }
+        }
+      }
+    }
+  }
+}

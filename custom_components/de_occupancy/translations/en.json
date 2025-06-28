@@ -2,9 +2,9 @@
   "config": {
     "step": {
       "user": {
-        "title": "Setup Delire Escalade Occupancy",
+        "title": "Setup Délire Escalade Occupancy Sensors",
         "data": {
-          "gyms": "Gyms to add"
+          "gyms": "Gyms to monitor"
         }
       },
       "reconfigure": {

@@ -2,16 +2,22 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
 
-from .const import CONF_GYMS, CONFIG_VERSION, DOMAIN, GYMS
+from .const import CONF_GYMS, CONFIG_VERSION, DOMAIN, GYM_LIST, GYMS
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigFlowResult
+    from homeassistant.helpers.selector import SelectOptionDict
+
+GYM_OPTIONS = cast(
+    "list[SelectOptionDict]",
+    [{"value": g.id, "label": g.name} for g in GYMS.values()],
+)
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -27,20 +33,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if self._async_current_entries():
             return self.async_abort(reason="single_instance_allowed")
 
-        await self.async_set_unique_id(DOMAIN)
-        self._abort_if_unique_id_configured()
-
         errors: dict[str, str] = {}
         if user_input:
             return self.async_create_entry(title="Delire Gyms", data=user_input)
 
         data_schema = vol.Schema(
             {
-                vol.Required(CONF_GYMS): vol.All(
-                    cv.ensure_list,
-                    list(GYMS),
+                vol.Required(CONF_GYMS, default=GYM_LIST): vol.All(
+                    SelectSelector(SelectSelectorConfig(options=GYM_LIST, multiple=True)),
                     vol.Length(min=1),
-                    default=list(GYMS),
                 ),
             },
         )
@@ -74,11 +75,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="reconfigure",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_GYMS): vol.All(
-                        cv.ensure_list,
-                        list(GYMS),
+                    vol.Required(CONF_GYMS, default=config_entry.data[CONF_GYMS]): vol.All(
+                        SelectSelector(SelectSelectorConfig(options=GYM_LIST, multiple=True)),
                         vol.Length(min=1),
-                        default=config_entry.data[CONF_GYMS],
                     ),
                 },
             ),
