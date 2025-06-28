@@ -1,5 +1,5 @@
 {
   "name": "Délire Escalade Occupancy Sensor",
   "render_readme": true,
-  "homeassistant": "2023.4.0"
+  "homeassistant": "2024.11.0"
 }

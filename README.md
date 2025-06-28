@@ -3,7 +3,7 @@
 [![GitHub Release](https://img.shields.io/github/release/sopelj/delire-escalade-hacs-component.svg?style=for-the-badge)](https://github.com/sopelj/delire-escalade-hacs-component/releases)
 [![License](https://img.shields.io/github/license/sopelj/delire-escalade-hacs-component.svg?style=for-the-badge)](LICENSE.md)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
-![Project Maintenance](https://img.shields.io/maintenance/yes/2023.svg?style=for-the-badge)
+![Project Maintenance](https://img.shields.io/maintenance/yes/2025.svg?style=for-the-badge)
 
 A sensor to display the occupancy of the [Délire Climbing gyms](https://www.delirescalade.com/) in Québec.
 A temporary measure in place for Covid. But I check it often enough that this is useful for me. Perhaps you as well.
@@ -20,7 +20,6 @@ And then add to your configuration.yaml and choose which Gyms you want to add se
 sensors:
   - platform: de_occupancy
     gyms:
-      - beauport
       - pierrebertrand
       - stefoy
       - parc

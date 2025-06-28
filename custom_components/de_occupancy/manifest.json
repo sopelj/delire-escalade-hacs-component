@@ -2,11 +2,11 @@
   "domain": "de_occupancy",
   "name": "Délire Escalade Occupancy Sensor",
   "codeowners": ["@sopelj"],
-  "config_flow": false,
+  "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/sopelj/home-assistant-custom-components",
+  "documentation": "https://github.com/sopelj/delire-escalade-hacs-component",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/sopelj/home-assistant-custom-components/issues",
+  "issue_tracker": "https://github.com/sopelj/delire-escalade-hacs-component/issues",
   "requirements": ["aiohttp"],
-  "version": "1.2.0"
+  "version": "2.0.0"
 }

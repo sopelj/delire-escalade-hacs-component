@@ -1,0 +1,126 @@
+[project]
+name = "delire_escalade_occupancy"
+readme = "README.md"
+description = "Délire Escalade Occupancy Sensor"
+authors = [
+    { name = "Jesse Sopel", email = "jesse.sopel@gmail.com" },
+]
+license =  "MIT"
+license-files = ["LICEN{CSE*"]
+requires-python = ">=3.9"
+dynamic = ["version"]
+classifiers=[
+    'Intended Audience :: Developers',
+    'Natural Language :: English',
+    'Programming Language :: Python :: 3.13',
+]
+dependencies = [
+    "aiohttp",
+    "homeassistant>=2024.11.1",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=7.2.1",
+  "pytest-cov>=3.0.0",
+  "pytest-asyncio>=0.20.2",
+  "pytest-homeassistant-custom-component",
+]
+
+[project.urls]
+"Source code" = "https://github.com/sopelj/delire-escalade-hacs-component/"
+"Bug Tracker" = "https://github.com/sopelj/delire-escalade-hacs-component/issues"
+
+[tool.hatch.version]
+path = "custom_components/de_occupancy/manifest.json"
+pattern = "\"version\": \"(?P<version>[^\"]+)"
+
+[tool.hatch.envs.default]
+python = "3.13"
+
+[tool.hatch.envs.test]
+features = ["test"]
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.13"]
+homeassistant = ["2024.12", "2025.3"]
+
+[tool.hatch.envs.test.scripts]
+cov = "pytest --asyncio-mode=auto --cov=custom_components --cov-branch --cov-report=xml --cov-report=term-missing tests -vvv"
+no-cov = "cov --no-cov"
+
+[tool.black]
+line-length = 120
+skip-string-normalization = true
+target-version = ["py313"]
+include = '\.pyi?$'
+exclude = '''
+/(
+  \.git
+  | \.mypy_cache
+  | \.ruff_cache
+  | env
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "def __repr__",
+  "def __str__",
+  "def main",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+  "if typing.TYPE_CHECKING:"
+]
+
+[tool.ruff]
+fix = true
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "A",
+    "ASYNC",
+    "B",
+    "COM",
+    "C4",
+    "D",
+    "E",
+    "ERA",
+    "F",
+    "FA",
+    "FLY",
+    "G",
+    "I",
+    "N",
+    "PTH",
+    "PT",
+    "PL",
+    "PLE",
+    "Q",
+    "RET",
+    "RSE",
+    "RUF",
+    "S",
+    "SLF",
+    "SIM",
+    "TD",
+    "TCH",
+    "UP",
+]
+ignore = ["D203", "D212", "PLR2004"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "D103",  # No docstrings in tests needed
+    "S101",  # We needs asserts in tests
+    "SLF001",
+]

@@ -1,5 +1,7 @@
 .mypy_cache
+coverage.xml
 .coverage
 .idea
 __pycache__
 coverage.xml
+delire_escalade_occupancy.egg-info/
