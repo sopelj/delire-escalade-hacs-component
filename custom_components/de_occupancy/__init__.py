@@ -39,10 +39,6 @@ async def async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-    if unload_ok:
-        mug_coordinator = entry.runtime_data
-        await mug_coordinator.mug.disconnect()
-        if not hass.config_entries.async_entries(DOMAIN):
-            hass.data.pop(DOMAIN)
-
+    if unload_ok and not hass.config_entries.async_entries(DOMAIN):
+        hass.data.pop(DOMAIN)
     return unload_ok

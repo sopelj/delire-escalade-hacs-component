@@ -40,7 +40,7 @@ async def setup_platform(
     api: DeOccupancyAPI,
     config_entry: MockConfigEntry | None = None,
 ) -> MockConfigEntry:
-    """Load the Mug integration with the provided mug and config for specified platform(s)."""
+    """Load the integration with the provided gym(s)."""
     if config_entry is None:
         config_entry = MockConfigEntry(
             domain=DOMAIN,

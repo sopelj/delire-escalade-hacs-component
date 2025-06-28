@@ -1,4 +1,4 @@
-"""Add Config Flow for Ember Mug."""
+"""Add Config Flow."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Config Flow for Ember Mug."""
+    """Config Flow."""
 
     VERSION = CONFIG_VERSION
 
