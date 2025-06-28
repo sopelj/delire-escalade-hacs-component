@@ -124,3 +124,14 @@ ignore = ["D203", "D212", "PLR2004"]
     "S101",  # We needs asserts in tests
     "SLF001",
 ]
+
+[tool.mypy]
+ignore_errors = false
+ignore_missing_imports = false
+warn_incomplete_stub = true
+warn_redundant_casts = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

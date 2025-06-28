@@ -1,13 +1,15 @@
+"""Basic API for isolating logic from Home Assistant component."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .const import GYM_ID, OCCUPANCY_API_URL, WAITLIST_API_URL, WAITLIST_CODE, DELIRE_CODE
+from .const import DELIRE_CODE, OCCUPANCY_API_URL, WAITLIST_API_URL, WAITLIST_CODE
 
 if TYPE_CHECKING:
     from typing import TypedDict
-    from aiohttp import ClientSession
 
+    from aiohttp import ClientSession
 
     class DelireApiResponse(TypedDict):
         """Delire API response."""
@@ -23,7 +25,7 @@ if TYPE_CHECKING:
         wait: int  # ETA in seconds
 
     class GymDataDict(TypedDict):
-        """State Attribute data."""
+        """All gym data."""
 
         count: int
         percent: int
@@ -54,10 +56,14 @@ def format_seconds(seconds: int) -> str:
 
 
 class DeOccupancyAPI:
-    def __init__(self, session: ClientSession):
+    """API object for sharing sessions and isolating code.."""
+
+    def __init__(self, session: ClientSession) -> None:
+        """Initialize the API object and store the session."""
         self._session = session
 
     async def fetch_gym_info(self, delire: DELIRE_CODE, waitlist: WAITLIST_CODE) -> GymDataDict:
+        """Fetch new information by codes."""
         async with self._session.get(
             OCCUPANCY_API_URL.format(code=delire),
         ) as response:

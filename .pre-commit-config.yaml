@@ -65,3 +65,5 @@ repos:
           - --show-error-context
         additional_dependencies:
           - homeassistant
+          - pytest
+          - pytest-homeassistant-custom-component

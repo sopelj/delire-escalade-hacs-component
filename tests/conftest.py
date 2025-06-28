@@ -1,17 +1,24 @@
 """Configure pytest."""
-from unittest.mock import Mock, AsyncMock, patch
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-
-from homeassistant.core import HomeAssistant
 from homeassistant.setup import async_setup_component
+from pytest_homeassistant_custom_component.common import (  # type: ignore[import-untyped]
+    MockConfigEntry,
+)
 
-from pytest_homeassistant_custom_component.common import MockConfigEntry
-
-from custom_components.de_occupancy.const import DOMAIN, CONF_GYMS
 from custom_components.de_occupancy.api import DeOccupancyAPI
+from custom_components.de_occupancy.const import CONF_GYMS, DOMAIN
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 pytest_plugins = "pytest_homeassistant_custom_component"
+
 
 @pytest.fixture(autouse=True)
 def _auto_enable_custom_integrations(enable_custom_integrations):
@@ -23,7 +30,7 @@ def mock_api() -> DeOccupancyAPI:
     """Create a mocked Delire API instance."""
     mock_session = Mock()
     api = DeOccupancyAPI(mock_session)
-    api.fetch_gym_info = AsyncMock(return_value={})
+    api.fetch_gym_info = AsyncMock(return_value={})  # type: ignore[method-assign]
     return api
 
 
