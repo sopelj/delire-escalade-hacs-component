@@ -86,6 +86,7 @@ class DeOccupancySensor(SensorEntity):
         self._api = api
         self._state = None
         self._available = True
+        self._attr_translation_key = "occupancy"
         self._attr_available = True
         self._attr_name = f"{self.gym.name} Occupancy"
         self._attr_native_unit_of_measurement = PERCENTAGE

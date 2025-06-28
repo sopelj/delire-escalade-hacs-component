@@ -1,0 +1,37 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Setup Delire Escalade Occupancy",
+        "data": {
+          "gyms": "Gyms to add"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Delire Escalade Occupancy",
+        "data": {
+          "gyms": "Gyms to add"
+        }
+      }
+    },
+    "abort": {
+      "invalid": "Invalid config",
+      "single_instance_allowed": "This integration can only be added once"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "occupancy": {
+        "name": "Occupancy",
+        "state_attributes": {
+          "count": { "name": "Occupant count" },
+          "percent": { "name": "Percent occupied" },
+          "waiting": { "name": "Number waiting" },
+          "wait_eta": { "name": "Wait ETA" },
+          "friendly_wait_eta": { "name": "Friendly Wait ETA" },
+          "gym": { "name": "Gym" }
+        }
+      }
+    }
+  }
+}
