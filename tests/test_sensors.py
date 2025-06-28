@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from unittest.mock import AsyncMock
 
 from .conftest import setup_platform
 
@@ -22,13 +23,15 @@ async def test_setup_sensors(
     """Initialize and test sensors."""
     assert len(hass.states.async_all()) == 0
 
-    mock_api.fetch_gym_info.return_value = {  # type: ignore[attr-defined]
-        "percent": 45,
-        "wait_eta": 60,
-        "friendly_wait_eta": "1min",
-        "waiting": 3,
-        "count": 150,
-    }
+    mock_api.fetch_gym_info = AsyncMock(  # type: ignore[method-assign]
+        return_value={
+            "percent": 45,
+            "wait_eta": 60,
+            "friendly_wait_eta": "1min",
+            "waiting": 3,
+            "count": 150,
+        },
+    )
     await setup_platform(hass, ["stefoy"], mock_api)
     assert len(hass.states.async_all()) == 1
 
